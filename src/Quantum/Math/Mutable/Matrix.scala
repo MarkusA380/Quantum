@@ -2,12 +2,13 @@ package Quantum.Math.Mutable
 
 import Quantum.Math.MatrixOperationException
 import Quantum.Enrichment._
-
 import monix.eval.Task
 import monix.reactive.Observable
 import monix.execution.Scheduler.Implicits.global
 
 import scala.collection.mutable.{ArrayBuffer => Vector}
+import scala.concurrent.Await
+import scala.concurrent.duration.Duration
 import scala.math.sqrt
 
 class Matrix[A] (var data: Vector[Vector[A]]) {
@@ -64,11 +65,20 @@ class Matrix[A] (var data: Vector[Vector[A]]) {
 
   /** Applies a method f to all elements in the Matrix */
   def foreachParallel(f: (Int, Int) => A, parallelism: Int) = {
-    Observable.range(0, data.length).mapParallelUnordered(parallelism) {
-      x => Task(for(y <- data(x.i).indices){
-        data(x.i)(y) = f(x.i, y)
-      })
-    }.subscribe()
+    Await.result(
+      Task.gather(
+        data.indices.grouped(10).map {
+          seq =>
+            Task(
+              for(x <- seq) {
+                for (y <- data(x).indices) {
+                  data(x)(y) = f(x, y)
+                }
+              }
+            )
+          }
+      ).runAsync
+    , Duration.Inf)
 
     this
   }

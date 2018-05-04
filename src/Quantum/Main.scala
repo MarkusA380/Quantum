@@ -31,8 +31,8 @@ object Main extends SimpleSwingApplication {
 
   /* Width and height of our window in pixels.
      The window can still be resized but the amount of virtual pixels will stay the same. */
-  val width = 200
-  val height = 200
+  val width = 400
+  val height = 400
 
   /* Define the field of view horizontally and vertically */
   val horizontalRot = new Quaternion(0d, 1d, 0d, 0.5d)
@@ -75,7 +75,7 @@ object Main extends SimpleSwingApplication {
       contents.head match {
         case canvas: Canvas =>
           /* Reevaluate shader for each screen space coordinate */
-          canvas.matrix.foreachParallel((x, y) => shader(x, y), 10)
+          canvas.matrix.foreachParallel((x, y) => shader(x, y), 8)
 
           println("Frame delta: " + ((time - renderStart) / (i + 1)).toString + " ms")
       }
