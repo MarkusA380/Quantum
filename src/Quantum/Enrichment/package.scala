@@ -1,6 +1,3 @@
-/*  Copyright 2018 Markus Appel
-    This file is released under GNU General Public License version 3. */
-
 package Quantum
 
 import scala.language.implicitConversions

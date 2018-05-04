@@ -5,8 +5,6 @@ import Quantum.Math.MatrixOperationException
 import scala.collection.immutable.Vector
 import scala.math.sqrt
 
-/* */
-
 class Matrix[A] (val data: Vector[Vector[A]]) {
 
   println("A new Matrix has been created.")
