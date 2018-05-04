@@ -25,8 +25,8 @@ trait Space[A] {
           if(
             v * v - 4d * (dir ○ dir) * (
               ((origin - child.position) ○ (origin - child.position))
-                - child.radius * child.radius
-              ) >= 0d
+              - child.radius * child.radius
+            ) >= 0d
           ) true
           else false
         }

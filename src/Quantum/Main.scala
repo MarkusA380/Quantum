@@ -14,7 +14,6 @@ import scala.concurrent.duration._
 import scala.swing.{MainFrame, SimpleSwingApplication}
 import monix.execution.Scheduler.Implicits.global
 
-
 object Main extends SimpleSwingApplication {
 
   /** The blueprint for our universe that decides which values the Volumes will be filled with
@@ -32,8 +31,8 @@ object Main extends SimpleSwingApplication {
 
   /* Width and height of our window in pixels.
      The window can still be resized but the amount of virtual pixels will stay the same. */
-  val width = 1000
-  val height = 1000
+  val width = 200
+  val height = 200
 
   /* Define the field of view horizontally and vertically */
   val horizontalRot = new Quaternion(0d, 1d, 0d, 0.5d)
@@ -72,11 +71,11 @@ object Main extends SimpleSwingApplication {
 
     val renderStart = time
     /* Create an Observable that runs the same code over and over again */
-    Observable.interval(0.seconds).map{i =>
+    Observable.interval(Duration.Zero).map{i =>
       contents.head match {
         case canvas: Canvas =>
           /* Reevaluate shader for each screen space coordinate */
-          canvas.matrix.foreach((x, y) => shader(x, y))
+          canvas.matrix.foreachParallel((x, y) => shader(x, y), 10)
 
           println("Frame delta: " + ((time - renderStart) / (i + 1)).toString + " ms")
       }
