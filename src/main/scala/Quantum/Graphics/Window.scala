@@ -12,6 +12,10 @@ import org.lwjgl.opengl.GL11._
 import org.lwjgl.opengl._
 import org.lwjgl.system.MemoryStack._
 import org.lwjgl.system.MemoryUtil._
+import monix.execution.Scheduler.Implicits.global
+import monix.reactive.Observable
+
+import scala.concurrent.duration._
 
 class Window(title: String, width: Int, height: Int, frame: Frame, shader: (Int, Int, Long) => Int) {
 
@@ -79,7 +83,20 @@ class Window(title: String, width: Int, height: Int, frame: Frame, shader: (Int,
 
     glClearColor(1f, 0f, 0f, 0f)
 
+    var frameCount = 1
+
+    Observable.interval(3.seconds).delayOnNext(3.seconds).map{
+      _ => {
+        val fps = math.round(frameCount / (Utils.currentTime / 1000.0))
+
+        val delta = Utils.currentTime / frameCount
+
+        Logger.info(s"Frame delta: $delta ms / $fps fps.")
+      }
+    }.subscribe()
+
     while(!glfwWindowShouldClose(window)) {
+
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
       /* Use GLFW to get the window size */
@@ -101,6 +118,7 @@ class Window(title: String, width: Int, height: Int, frame: Frame, shader: (Int,
       frame.update(shader(_, _, t), 4)
 
       /* Repaint the updated frame */
+      /* This loop costs about 10 ms for 960x540 pixels */
       for(x <- 0 until frame.width; y <- 0 until frame.height) {
 
         /* Here we have to use Eta Expansion to convert the method glColor3i to a function */
@@ -114,6 +132,8 @@ class Window(title: String, width: Int, height: Int, frame: Frame, shader: (Int,
 
       glfwSwapBuffers(window)
       glfwPollEvents()
+
+      frameCount += 1
     }
     Logger.debug("Exit main loop.")
   }

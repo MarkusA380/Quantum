@@ -7,19 +7,14 @@ import scala.collection.mutable.ArrayBuffer
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
 
-class Frame(var data: Vector[ArrayBuffer[Int]]) {
+class Frame(data: Vector[ArrayBuffer[Int]]) {
 
-  /** Create a new Frame using a function that defines the initial value of each element.
+  /** Create a new Frame filled with zeroes.
     * @param width The width of the frame
     * @param height The height of the frame
-    * @param f A function that maps the coordinates of an element to its value
     */
-  def this(width: Int, height: Int, f: (Int, Int) => Int) = this(
-    Vector.range(0, width).map(
-      x => ArrayBuffer.range(0, height).map(
-        y => f(x, y)
-      )
-    )
+  def this(width: Int, height: Int) = this(
+    Vector.fill(width)(ArrayBuffer.fill(height)(0))
   )
 
   /** Returns the value with the given coordinates */
